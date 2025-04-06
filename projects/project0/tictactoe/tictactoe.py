@@ -113,7 +113,7 @@ def utility(board):
         return 0
 
 
-def minimax(board):
+def minimax_old(board):
     """
     Returns the optimal action for the current player on the board.
     """
@@ -167,3 +167,61 @@ def minValue(board):
     for action in actions(board):
         v = min(v, maxValue(result(board, action)))
     return v
+
+
+def minimax(board):
+    """
+    Returns the optimal action for the current player on the board.
+    """
+    if terminal(board):
+        return None
+    
+    best_action = ()
+
+    # if player is X, choose the max value that can be produced from current state.
+    if player(board) == X:
+        v = float("-inf")
+        for action in actions(board):
+            current = alphgaBetaValue(result(board, action), v, -v)
+            # choose the maximal value from minValue that opponent chosen
+            if current > v:
+                v = current
+                best_action = action
+        return best_action
+    
+    # if player is O, choose the min value that can be produced from current state.
+    if player(board) == O:
+        v = float("inf")
+        for action in actions(board):
+            current = alphgaBetaValue(result(board, action), -v, v)
+            # choose the minimal value from maxValue that opponent chosen
+            if current < v:
+                v = current
+                best_action = action
+        return best_action
+    
+    
+
+def alphgaBetaValue(board, alpha, beta):
+    """
+    Returns the value of optimal action for the current player on the board.
+    """
+    if terminal(board):
+        return utility(board)
+
+    if player(board) == X:
+        v = float("-inf")
+        for action in actions(board):
+            v = max(v, alphgaBetaValue(result(board, action), alpha, beta))
+            alpha = max(v, alpha)
+            if alpha >= beta:
+                break
+        return v
+    else:
+        v = float("inf")
+        for action in actions(board):
+            v = min(v, alphgaBetaValue(result(board, action), alpha, beta))
+            beta = min(v, beta)
+            if alpha >= beta:
+                break
+        return v
